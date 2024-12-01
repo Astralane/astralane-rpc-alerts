@@ -1,0 +1,17 @@
+{
+  "name": "monitor_cluster",
+  "version": "1.0.0",
+  "description": "Monitoring Gossip Clusters",
+  "main": "main.js",
+  "scripts": {
+    "start": "node main.js"
+  },
+  "keywords": [
+    "cluster",
+    "solana",
+    "monitor",
+    "gossip"
+  ],
+  "author": "Bishal Goon <work.bishalgoon@gmail.com>",
+  "license": "ISC"
+}
