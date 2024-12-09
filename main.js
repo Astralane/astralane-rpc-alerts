@@ -3,7 +3,8 @@ const path = require("path")
 
 const base_url = "https://api.mainnet-beta.solana.com"
 const file_path = path.resolve(__dirname, "./downtime.log")
-const discord_webhook = "https://discord.com/api/webhooks/1303019850402238528/Y_LLT1hiGHxstFGBaqRcKrYDphl4XwTV_EbLbQXggd4y8gXf5KzRw9AKLI6CA5tteGM8"
+const discord_webhook =
+    "https://discord.com/api/webhooks/1303019850402238528/Y_LLT1hiGHxstFGBaqRcKrYDphl4XwTV_EbLbQXggd4y8gXf5KzRw9AKLI6CA5tteGM8"
 const clusters_to_monitor = [
     "94rvXTFf7ZtKihLXrwp8e5mQmKVWLFG6aKqKzR3pYqF1",
     "9XKnHTDpFCR12FeWwbzHMsBNwbtNLrzWaApiVcjMqvzW",
@@ -43,16 +44,12 @@ const get_cluster_node = async () => {
     return response
 }
 
-const send_discord = async (_nodes) => {
-    await fetch(discord_webhook, {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-            // content: "Clusters are not ACTIVE!",
+const send_discord = async (_nodes, _is_down) => {
+    let discord_body = {}
+
+    if (_is_down) {
+        discord_body = {
             username: "Cluster BOT!",
-            avatar_url: "https://api.dicebear.com/9.x/bottts/svg?seed=Eliza",
             embeds: [
                 {
                     title: "Cluster ERROR!",
@@ -62,7 +59,28 @@ const send_discord = async (_nodes) => {
                     color: 0xca4143,
                 },
             ],
-        }),
+        }
+    } else {
+        discord_body = {
+            username: "Cluster BOT!",
+            embeds: [
+                {
+                    title: "Cluster INFO!",
+                    description: `These clusters are active -> ${_nodes.join(
+                        ",\n"
+                    )}`,
+                    color: 0x94fe95,
+                },
+            ],
+        }
+    }
+
+    await fetch(discord_webhook, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify(discord_body),
     })
         .then((_response) => {
             if (_response.status === 204) {
@@ -111,6 +129,19 @@ const main = async () => {
             })
         }
 
+        // Got back up
+        const got_back_up = new Array()
+        downtime.forEach((_value, _key, _map) => {
+            if (_value.is_down && !currently_got_down.includes(_key)) {
+                got_back_up.push(_key)
+                downtime.set(_key, {
+                    is_down: false,
+                    start_downtime: null,
+                })
+            }
+        })
+        got_back_up.length > 0 && send_discord(got_back_up, false)
+
         const d = new Date()
         console.info(
             `[${d.toLocaleDateString("en-IN", {
@@ -133,7 +164,8 @@ const main = async () => {
             }
         })
 
-        if (currently_got_down.length > 0) await send_discord(currently_got_down)
+        if (currently_got_down.length > 0)
+            await send_discord(currently_got_down, true)
 
         await sleep(1000 * 60 * 5)
     }
