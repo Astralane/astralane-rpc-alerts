@@ -8,9 +8,9 @@ const discord_webhook =
 const clusters_to_monitor = [
     "94rvXTFf7ZtKihLXrwp8e5mQmKVWLFG6aKqKzR3pYqF1",
     "9XKnHTDpFCR12FeWwbzHMsBNwbtNLrzWaApiVcjMqvzW",
-    "CbvjseFvBqvBFz3Xe75iuA9vhkkFrjmnYSPx5AEcojwp",
-    "A6q8636gVPZFHDj4kDUQVWArbQxwoymUkyrxAfV5nM3Z",
+    "CbvjseFvBqvBFz3Xe75iuA9vhkkFrjmnYSPx5AEcojwp"
 ]
+//"A6q8636gVPZFHDj4kDUQVWArbQxwoymUkyrxAfV5nM3Z",
 const downtime = new Map()
 
 async function sleep(ms) {
